@@ -1,4 +1,4 @@
-package com.gitHub.GabriePerin.Spring_Stock_Controller;
+package com.gitHub.GabrielPerin.Spring_Stock_Controller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

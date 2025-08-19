@@ -1,7 +1,7 @@
-package com.gitHub.GabriePerin.Spring_Stock_Controller.service;
+package com.gitHub.GabrielPerin.Spring_Stock_Controller.service;
 
-import com.gitHub.GabriePerin.Spring_Stock_Controller.model.Product;
-import com.gitHub.GabriePerin.Spring_Stock_Controller.repository.ProductRepository;
+import com.gitHub.GabrielPerin.Spring_Stock_Controller.model.Product;
+import com.gitHub.GabrielPerin.Spring_Stock_Controller.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

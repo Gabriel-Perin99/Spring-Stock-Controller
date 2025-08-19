@@ -1,4 +1,4 @@
-package com.gitHub.GabriePerin.Spring_Stock_Controller;
+package com.gitHub.GabrielPerin.Spring_Stock_Controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

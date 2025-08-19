@@ -1,7 +1,7 @@
-package com.gitHub.GabriePerin.Spring_Stock_Controller.controller;
+package com.gitHub.GabrielPerin.Spring_Stock_Controller.controller;
 
-import com.gitHub.GabriePerin.Spring_Stock_Controller.model.Product;
-import com.gitHub.GabriePerin.Spring_Stock_Controller.service.ProductService;
+import com.gitHub.GabrielPerin.Spring_Stock_Controller.model.Product;
+import com.gitHub.GabrielPerin.Spring_Stock_Controller.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 //This class deals with HTTP requests and returns the appropriate response to each client.
+@RestController
+@RequestMapping("/Product")
 public class ProductController {
 
     @Autowired

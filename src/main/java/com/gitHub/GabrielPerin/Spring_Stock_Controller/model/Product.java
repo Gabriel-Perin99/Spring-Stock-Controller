@@ -1,4 +1,4 @@
-package com.gitHub.GabriePerin.Spring_Stock_Controller.model;
+package com.gitHub.GabrielPerin.Spring_Stock_Controller.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
