@@ -3,7 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+meu_banco_de_dados.db
 ### STS ###
 .apt_generated
 .classpath
