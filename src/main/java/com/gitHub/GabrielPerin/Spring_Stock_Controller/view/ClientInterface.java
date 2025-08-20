@@ -1,5 +1,6 @@
 package com.gitHub.GabrielPerin.Spring_Stock_Controller.view;
 import com.gitHub.GabrielPerin.Spring_Stock_Controller.model.Product;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.collections.ObservableList;
@@ -10,12 +11,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.application.Application;
+import org.springframework.context.ConfigurableApplicationContext;
 
 
 public class ClientInterface extends Application {
     // Pulls the Methods of the Productapiclient class to the interfaces button
     ProductApiClient apiClient = new ProductApiClient();
     private final ObservableList<Product> products = FXCollections.observableArrayList();
+
+    //This Variable stores the Spring context
+    private static ConfigurableApplicationContext context;
+    //Injects the Spring context into javaFx, thus allowing JavaFX to access the Spring Application
+    public static void setApplicationContext(ConfigurableApplicationContext ctx){
+        context = ctx;
+    }
 
     @Override
     public void start(Stage stage) {
@@ -235,7 +244,13 @@ public class ClientInterface extends Application {
             e.printStackTrace();
         }
     }
-
+    //This method changes the Spring Context to Null as soon as the Program Closes, thus closing the Spring application
+    public void stop(){
+        if (context != null){
+            context.close();
+        }
+        Platform.exit();
+    }
 
     public static void main(String[] args) {
         launch(args);
