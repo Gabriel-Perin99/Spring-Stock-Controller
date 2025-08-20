@@ -72,4 +72,14 @@ class ProductApiClient {
          HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
          return response.statusCode() == 200 || response.statusCode()==204;
     }
+
+    public boolean findAllByName (String name) throws Exception{
+         HttpRequest request = HttpRequest.newBuilder()
+                 .uri(URI.create(BASE_URL + "/" + name))
+                 .GET()
+                 .build();
+
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return response.statusCode() == 200;
+    }
 }

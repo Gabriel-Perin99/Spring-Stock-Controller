@@ -1,6 +1,8 @@
 package com.gitHub.GabrielPerin.Spring_Stock_Controller.view;
 import com.gitHub.GabrielPerin.Spring_Stock_Controller.model.Product;
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.collections.ObservableList;
@@ -12,6 +14,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.List;
 
 
 public class ClientInterface extends Application {
@@ -73,18 +77,20 @@ public class ClientInterface extends Application {
         HBox statusBox = new HBox(8,status, statusComboBox);
 
         Button send = new Button("Adicionar");
-        send.setPrefWidth(150);
+        send.setPrefWidth(120);
         Button update = new Button("Atualizar");
-        update.setPrefWidth(150);
+        update.setPrefWidth(120);
         update.setDisable(true);
         Button delete = new Button("Excluir");
-        delete.setPrefWidth(150);
+        delete.setPrefWidth(120);
         delete.setDisable(true);
         Button clear = new Button("Limpar Seleção");
-        clear.setPrefWidth(150);
+        clear.setPrefWidth(120);
         clear.setDisable(true);
-        ButtonBar buttonBar = new ButtonBar();
-        HBox buttonBox = new HBox(12,send,update,delete,clear);
+        TextField search = new TextField();
+        search.setPromptText("Filtre aqui: Nome/Código do Produto");
+        search.setPrefWidth(230);
+        HBox buttonBox = new HBox(12,send,update,delete,clear,search);
         buttonBox.setPrefWidth(Double.MAX_VALUE);
 
         //Resource to select the item in the table
@@ -105,6 +111,23 @@ public class ClientInterface extends Application {
                 update.setDisable(true);
                 delete.setDisable(true);
                 send.setDisable(false);
+            }
+        });
+        //Live Filter based by product Code or Name
+        search.textProperty().addListener((Observable,oldSearch, newSearch)->{
+            String filter = newSearch.toLowerCase();
+
+            if(filter.isEmpty()){
+                tableView.setItems(products);
+            }else {
+                ObservableList<Product> newList = FXCollections.observableArrayList();
+                //Creates a New List of Products
+                for (Product p : products){
+                    if (p.getName().toLowerCase().contains(filter)||p.getCode().contains(filter)){
+                    newList.add(p);
+                    };
+                }
+                tableView.setItems(newList);
             }
         });
 
@@ -132,6 +155,7 @@ public class ClientInterface extends Application {
                     nameField.clear();
                     quantField.clear();
                     priceField.clear();
+                    search.clear();
                     statusComboBox.setValue(null);
                     updateTable();
                 } else {
@@ -155,6 +179,7 @@ public class ClientInterface extends Application {
                         nameField.clear();
                         quantField.clear();
                         priceField.clear();
+                        search.clear();
                         statusComboBox.setValue(null);
                     }else {
                         System.out.println("Falha ao deletar o Produto");
@@ -192,6 +217,7 @@ public class ClientInterface extends Application {
                         nameField.clear();
                         quantField.clear();
                         priceField.clear();
+                        search.clear();
                         statusComboBox.setValue(null);
                         updateTable();
                     } else {
