@@ -55,16 +55,7 @@ public class ClientInterface extends Application {
         tableView.getColumns().addAll(idCol, nomeCol, qtdCol, precoCol, statusCol);
         tableView.setItems(products);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        //Resource to select the item in the table
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection,newSelection)->{
-            if(newSelection != null){
-                codeField.setText(String.valueOf(newSelection.getCode()));
-                nameField.setText(newSelection.getName());
-                quantField.setText(String.valueOf(newSelection.getQuantity()));
-                priceField.setText(String.valueOf(newSelection.getPrice()));
-                statusComboBox.setValue(newSelection.getStatus());
-            }
-        });
+
         //Objects for the interface
         HBox codeBox = new HBox(8,code,codeField);
         HBox nameBox = new HBox(8,name, nameField);
@@ -73,9 +64,40 @@ public class ClientInterface extends Application {
         HBox statusBox = new HBox(8,status, statusComboBox);
 
         Button send = new Button("Adicionar");
+        send.setPrefWidth(150);
         Button update = new Button("Atualizar");
+        update.setPrefWidth(150);
+        update.setDisable(true);
         Button delete = new Button("Excluir");
-        HBox buttonBox = new HBox(8,send,update,delete);
+        delete.setPrefWidth(150);
+        delete.setDisable(true);
+        Button clear = new Button("Limpar Seleção");
+        clear.setPrefWidth(150);
+        clear.setDisable(true);
+        ButtonBar buttonBar = new ButtonBar();
+        HBox buttonBox = new HBox(12,send,update,delete,clear);
+        buttonBox.setPrefWidth(Double.MAX_VALUE);
+
+        //Resource to select the item in the table
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection,newSelection)->{
+            if(newSelection != null){
+                codeField.setText(String.valueOf(newSelection.getCode()));
+                nameField.setText(newSelection.getName());
+                quantField.setText(String.valueOf(newSelection.getQuantity()));
+                priceField.setText(String.valueOf(newSelection.getPrice()));
+                statusComboBox.setValue(newSelection.getStatus());
+                send.setDisable(true);
+                update.setDisable(false);
+                delete.setDisable(false);
+                clear.setDisable(false);
+            } else{
+                clear.setDisable(true);
+                update.setDisable(true);
+                delete.setDisable(true);
+                send.setDisable(false);
+            }
+        });
 
         VBox layoutCamps = new VBox(codeBox,nameBox, quantBox, priceBox, statusBox,buttonBox,tableView);
         layoutCamps.setSpacing(10);
@@ -97,6 +119,11 @@ public class ClientInterface extends Application {
                 //When the operation is performed,if the code was a success, it shows the success message at the terminal
                 if(success){
                     System.out.println("Produto Adicionado com Sucesso!");
+                    codeField.clear();
+                    nameField.clear();
+                    quantField.clear();
+                    priceField.clear();
+                    statusComboBox.setValue(null);
                     updateTable();
                 } else {
                     System.out.println("Falha ao adicionar o Produto!");
@@ -115,6 +142,11 @@ public class ClientInterface extends Application {
                     boolean deleted = apiClient.deleteProduct(selected.getId());
                     if(deleted){
                         System.out.println("Produto deletado com Sucesso");
+                        codeField.clear();
+                        nameField.clear();
+                        quantField.clear();
+                        priceField.clear();
+                        statusComboBox.setValue(null);
                     }else {
                         System.out.println("Falha ao deletar o Produto");
                     }
@@ -147,6 +179,11 @@ public class ClientInterface extends Application {
 
                     if (success) {
                         System.out.println("Produto atualizado com sucesso!");
+                        codeField.clear();
+                        nameField.clear();
+                        quantField.clear();
+                        priceField.clear();
+                        statusComboBox.setValue(null);
                         updateTable();
                     } else {
                         System.out.println("Erro ao atualizar produto.");
@@ -157,6 +194,19 @@ public class ClientInterface extends Application {
             } else {
                 System.out.println("Selecione um produto para atualizar.");
             }
+        });
+
+        clear.setOnAction(_->{
+            tableView.getSelectionModel().clearSelection();
+            codeField.clear();
+            nameField.clear();
+            quantField.clear();
+            priceField.clear();
+            statusComboBox.setValue(null);
+            send.setDisable(false);
+            clear.setDisable(true);
+            updateTable();
+
         });
 
 
@@ -188,6 +238,6 @@ public class ClientInterface extends Application {
 
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
