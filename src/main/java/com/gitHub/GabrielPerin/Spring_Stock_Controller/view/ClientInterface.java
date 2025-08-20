@@ -19,7 +19,10 @@ public class ClientInterface extends Application {
 
     @Override
     public void start(Stage stage) {
-
+        updateTable();
+        Text code = new Text("Código Produto: ");
+        TextField codeField = new TextField();
+        codeField.setPromptText("123456");
         Text name = new Text("Nome: ");
         TextField nameField = new TextField();
         nameField.setPromptText("Exemplo: Notebook");
@@ -38,8 +41,8 @@ public class ClientInterface extends Application {
 
         //Create Table for the Interface
         TableView<Product> tableView = new TableView<>();
-        TableColumn<Product, Integer> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Product, Integer> idCol = new TableColumn<>("Código");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("code"));
         TableColumn<Product, String> nomeCol = new TableColumn<>("Nome");
         nomeCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         TableColumn<Product, Integer> qtdCol = new TableColumn<>("Quantidade");
@@ -55,6 +58,7 @@ public class ClientInterface extends Application {
         //Resource to select the item in the table
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection,newSelection)->{
             if(newSelection != null){
+                codeField.setText(String.valueOf(newSelection.getCode()));
                 nameField.setText(newSelection.getName());
                 quantField.setText(String.valueOf(newSelection.getQuantity()));
                 priceField.setText(String.valueOf(newSelection.getPrice()));
@@ -62,6 +66,7 @@ public class ClientInterface extends Application {
             }
         });
         //Objects for the interface
+        HBox codeBox = new HBox(8,code,codeField);
         HBox nameBox = new HBox(8,name, nameField);
         HBox quantBox = new HBox(8,quantity, quantField);
         HBox priceBox = new HBox(8,price, priceField);
@@ -72,19 +77,20 @@ public class ClientInterface extends Application {
         Button delete = new Button("Excluir");
         HBox buttonBox = new HBox(8,send,update,delete);
 
-        VBox layoutCamps = new VBox(nameBox, quantBox, priceBox, statusBox,buttonBox,tableView);
+        VBox layoutCamps = new VBox(codeBox,nameBox, quantBox, priceBox, statusBox,buttonBox,tableView);
         layoutCamps.setSpacing(10);
         layoutCamps.setStyle("-fx-padding: 20;");
 
         //Action for send the info to Database
         send.setOnAction(_ ->{
             try{
+                String getCodeField = codeField.getText();
                 String getNameField = nameField.getText();
                 int getQntField = Integer.parseInt(quantField.getText());
                 double getPrice = Double.parseDouble(priceField.getText());
                 String getStatus = (String)statusComboBox.getValue();
                 //Create ProductDTO
-                ProductDTO productDTO = new ProductDTO(getNameField, getQntField, getPrice,getStatus);
+                ProductDTO productDTO = new ProductDTO(getCodeField,getNameField, getQntField, getPrice,getStatus);
                 // In case of success, send the information to the API
                 boolean success = apiClient.addProduct(productDTO);
 
@@ -128,13 +134,14 @@ public class ClientInterface extends Application {
             if (selected != null) {
                 try {
                     //Take the infos from the table and set on the textField
+                    String ucode = codeField.getText();
                     String uname = nameField.getText();
                     int uquantity = Integer.parseInt(quantField.getText());
                     double uprice = Double.parseDouble(priceField.getText());
                     String ustatus = (String) statusComboBox.getValue();
 
                     //create a new ProductDTO
-                    ProductDTO updatedProduct = new ProductDTO(uname, uquantity, uprice, ustatus);
+                    ProductDTO updatedProduct = new ProductDTO(ucode,uname, uquantity, uprice, ustatus);
                     //Update the product based on the selected ID
                     boolean success = apiClient.updateProduct(selected.getId(), updatedProduct);
 
@@ -167,6 +174,7 @@ public class ClientInterface extends Application {
             for (ProductDTO p : list) {
                 Product product = new Product();
                 product.setId(p.getId());
+                product.setCode(p.getCode());
                 product.setName(p.getName());
                 product.setQuantity(p.getQuantity());
                 product.setPrice(p.getPrice());
