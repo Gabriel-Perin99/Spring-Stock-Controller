@@ -33,4 +33,11 @@ public class ProductService {
     public Optional<Product> findById(Long id){
         return productRepository.findById(id);
     }
+    public List<Product> findByName(String name){
+        List<Product> products = productRepository.findAllByName(name);
+        if (products.isEmpty()){
+            throw new RuntimeException("Não foi Encontrado nenhum produto com este Nome");
+        }
+        return products;
+    }
 }
