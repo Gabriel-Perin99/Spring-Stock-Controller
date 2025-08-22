@@ -1,12 +1,12 @@
 package com.gitHub.GabrielPerin.Spring_Stock_Controller.view;
 import com.gitHub.GabrielPerin.Spring_Stock_Controller.model.Product;
 import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,8 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import java.util.List;
 
 
 public class ClientInterface extends Application {
@@ -137,20 +135,35 @@ public class ClientInterface extends Application {
 
         //Action for send the info to Database
         send.setOnAction(_ ->{
-            try{
+            try {
+                ////Verify if all fields have content
+                if(codeField.getText().isEmpty()||nameField.getText().isEmpty()||
+                        quantField.getText().isEmpty()||priceField.getText().isEmpty()||statusComboBox == null){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Campos Vazios");
+                    alert.setContentText("PREENCHA TODOS OS CAMPOS!");
+                    alert.show();
+                    return;
+                }
                 String getCodeField = codeField.getText();
                 String getNameField = nameField.getText();
                 int getQntField = Integer.parseInt(quantField.getText());
-                double getPrice = Double.parseDouble(priceField.getText());
-                String getStatus = (String)statusComboBox.getValue();
+                String getPrice = priceField.getText();
+                getPrice = getPrice.replace(",",".");
+                double newPrice = Double.parseDouble(getPrice);
+                String getStatus = (String) statusComboBox.getValue();
                 //Create ProductDTO
-                ProductDTO productDTO = new ProductDTO(getCodeField,getNameField, getQntField, getPrice,getStatus);
+                ProductDTO productDTO = new ProductDTO(getCodeField, getNameField, getQntField, newPrice, getStatus);
                 // In case of success, send the information to the API
                 boolean success = apiClient.addProduct(productDTO);
 
                 //When the operation is performed,if the code was a success, it shows the success message at the terminal
-                if(success){
+                if (success) {
                     System.out.println("Produto Adicionado com Sucesso!");
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setContentText("Produto adicionado com Sucesso");
+                    alert.setHeaderText("Operação Concluída:");
+                    alert.show();
                     codeField.clear();
                     nameField.clear();
                     quantField.clear();
@@ -160,29 +173,51 @@ public class ClientInterface extends Application {
                     updateTable();
                 } else {
                     System.out.println("Falha ao adicionar o Produto!");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("ERRO!");
+                    alert.setContentText("Falha ao adcionar produto!");
+                    alert.show();
                 }
             }catch (Exception e){
-                e.printStackTrace();
+                System.out.println("Erro ao Executar Tarefa! ");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("ERRO!");
+                alert.setContentText("Erro ao Executar Tarefa!");
+                alert.show();
             }
         });
-        //Action for Delete a selected item from the table and Database
+            //Action for Delete a selected item from the table and Database
         delete.setOnAction(_->{
             ////Resource to select the item in the table
             Product selected = tableView.getSelectionModel().getSelectedItem();
             if(selected != null){
                 try {
-                    // Action condition to delete the item based on the selected product ID
-                    boolean deleted = apiClient.deleteProduct(selected.getId());
-                    if(deleted){
-                        System.out.println("Produto deletado com Sucesso");
-                        codeField.clear();
-                        nameField.clear();
-                        quantField.clear();
-                        priceField.clear();
-                        search.clear();
-                        statusComboBox.setValue(null);
-                    }else {
-                        System.out.println("Falha ao deletar o Produto");
+                    Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,"Tem certeza que deseja excluir o Produto?",ButtonType.YES,ButtonType.NO);
+                    confirmation.showAndWait();
+                    if(confirmation.getResult() == ButtonType.YES){
+                        // Action condition to delete the item based on the selected product ID
+                        boolean deleted = apiClient.deleteProduct(selected.getId());
+                        if(deleted){
+                            System.out.println("Produto deletado com Sucesso");
+                            String getCodeField = codeField.getText();
+                            String getNameField = nameField.getText();
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setHeaderText("Operação Concluída");
+                            alert.setContentText("O Produto: "+ getCodeField +"( "+getNameField+ " ) foi deletado com sucesso!" );
+                            alert.show();
+                            codeField.clear();
+                            nameField.clear();
+                            quantField.clear();
+                            priceField.clear();
+                            search.clear();
+                            statusComboBox.setValue(null);
+                        }else {
+                            System.out.println("Falha ao deletar o Produto!");
+                            Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setHeaderText("ERRO");
+                            alert.setContentText("Falha ao deletar o Produto!");
+                            alert.show();
+                        }
                     }
                     //Once the action is done, updates the table
                     updateTable();
@@ -197,22 +232,35 @@ public class ClientInterface extends Application {
         update.setOnAction(_->{
             // Action condition to uptade info the item based on the selected product ID
             Product selected = tableView.getSelectionModel().getSelectedItem();
+            //Verify if all fields have content
+            if(codeField.getText().isEmpty()||nameField.getText().isEmpty()||
+                    quantField.getText().isEmpty()||priceField.getText().isEmpty()||statusComboBox == null){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Campos Vazios");
+                alert.setContentText("PREENCHA TODOS OS CAMPOS!");
+                alert.show();
+                return;
+            }
             if (selected != null) {
                 try {
                     //Take the infos from the table and set on the textField
                     String ucode = codeField.getText();
                     String uname = nameField.getText();
                     int uquantity = Integer.parseInt(quantField.getText());
-                    double uprice = Double.parseDouble(priceField.getText());
+                    String getPrice = priceField.getText();
+                    getPrice = getPrice.replace(",",".");
+                    double newPrice = Double.parseDouble(getPrice);
                     String ustatus = (String) statusComboBox.getValue();
 
                     //create a new ProductDTO
-                    ProductDTO updatedProduct = new ProductDTO(ucode,uname, uquantity, uprice, ustatus);
+                    ProductDTO updatedProduct = new ProductDTO(ucode,uname, uquantity, newPrice, ustatus);
                     //Update the product based on the selected ID
                     boolean success = apiClient.updateProduct(selected.getId(), updatedProduct);
 
                     if (success) {
                         System.out.println("Produto atualizado com sucesso!");
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION,"O Produto Código: " + ucode +"( "+uname+" ) Foi Atualizado com sucesso!");
+                        alert.show();
                         codeField.clear();
                         nameField.clear();
                         quantField.clear();
